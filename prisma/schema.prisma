@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+
+  schemas  = ["candidate","internal_team","employer"]
+}
+
+
+
+//
+// ======================================================
+// INTERNAL TEAM SCHEMA
+// ======================================================
+//
+
+
+model auth_details {
+
+  id              Int       @id @default(autoincrement())
+
+  email           String    @unique
+  password        String
+
+  role_id         Int
+
+  is_active       Boolean   @default(true)
+
+  created_at      DateTime  @default(now())
+
+  role            master_role_details @relation(fields: [role_id], references: [id])
+
+  user_detail     user_details?
+
+  @@schema("internal_team")
+}
+
+
+model user_details {
+
+  id              Int       @id @default(autoincrement())
+
+  auth_id         Int       @unique
+
+  full_name       String
+  phone           String?
+
+  profile_image   String?
+
+  created_at      DateTime  @default(now())
+
+  auth            auth_details @relation(fields: [auth_id], references: [id])
+
+  @@schema("internal_team")
+}
+
+model master_role_details {
+
+  id              Int       @id @default(autoincrement())
+
+  role_name       String    @unique
+
+  created_at      DateTime  @default(now())
+
+  auth_users      auth_details[]
+
+  @@schema("internal_team")
+}
