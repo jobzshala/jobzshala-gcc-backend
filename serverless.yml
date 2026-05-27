@@ -8,16 +8,60 @@ provider:
 
   region: ap-south-1
 
+  stage: ${opt:stage, 'dev'}
+
+  timeout: 29
+
+  memorySize: 512
+
 functions:
 
   api:
 
     handler: dist/lambda/api.lambda.handler
 
-    timeout: 30
-
-    memorySize: 512
-
     events:
 
       - httpApi: '*'
+
+package:
+
+  individually: true
+
+  patterns:
+
+    #
+    # INCLUDE
+    #
+
+    - dist/**
+
+    - node_modules/**
+
+    - package.json
+
+    #
+    # EXCLUDE
+    #
+
+    - '!src/**'
+
+    - '!tests/**'
+
+    - '!coverage/**'
+
+    - '!prisma/**'
+
+    - '!README.md'
+
+    - '!tsconfig.json'
+
+    - '!jest.config.ts'
+
+    - '!node_modules/.prisma/client/libquery_engine-*'
+
+    - '!node_modules/prisma/**'
+
+    - '!node_modules/@prisma/engines/**'
+
+    - '!node_modules/aws-sdk/**'
