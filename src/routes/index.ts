@@ -1,16 +1,35 @@
 import express from 'express';
 
-import v1_authRoutes from '../modules/v1/auth/auth.routes';
+
+//
+// VERSION ROUTES
+//
+
+import v1Routes from './v1/index.js';
+
 
 const router = express.Router();
 
-router.use('/v1/auth', v1_authRoutes);
+
+//
+// API VERSIONS
+//
+
+router.use('/v1', v1Routes);
+
+
+//
+// HEALTH API
+//
 
 router.get('/health', (req, res) => {
 
     return res.json({
+
         status: true,
+
         message: 'API Running'
+
     });
 
 });

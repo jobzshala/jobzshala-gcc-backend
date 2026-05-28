@@ -1,11 +1,5 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendEmailToQueue = void 0;
-const aws_sdk_1 = __importDefault(require("aws-sdk"));
-const sqs = new aws_sdk_1.default.SQS({
+import AWS from 'aws-sdk';
+const sqs = new AWS.SQS({
     region: process.env.AWS_REGION
 });
 //
@@ -13,7 +7,7 @@ const sqs = new aws_sdk_1.default.SQS({
 // SEND EMAIL TO QUEUE
 // ========================================
 //
-const sendEmailToQueue = async (payload) => {
+export const sendEmailToQueue = async (payload) => {
     try {
         const params = {
             QueueUrl: process.env.EMAIL_QUEUE_URL,
@@ -29,4 +23,3 @@ const sendEmailToQueue = async (payload) => {
         throw err;
     }
 };
-exports.sendEmailToQueue = sendEmailToQueue;

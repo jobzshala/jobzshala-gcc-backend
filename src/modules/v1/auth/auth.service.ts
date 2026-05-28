@@ -1,4 +1,4 @@
-import * as repository from './auth.repository';
+import * as repository from './auth.repository.js';
 
 export const login = async (payload: {
   email: string;

@@ -1,5 +1,7 @@
 service: jobzshala-gcc-backend
 
+frameworkVersion: '3'
+
 provider:
 
   name: aws
@@ -18,50 +20,42 @@ functions:
 
   api:
 
-    handler: dist/lambda/api.lambda.handler
+    handler: src/lambda/api.lambda.handler
 
     events:
 
-      - httpApi: '*'
+      - httpApi:
 
-package:
+          path: /{proxy+}
 
-  individually: true
+          method: ANY
 
-  patterns:
+      - httpApi:
 
-    #
-    # INCLUDE
-    #
+          path: /
 
-    - dist/**
+          method: ANY
 
-    - node_modules/**
+plugins:
 
-    - package.json
+  - serverless-esbuild
 
-    #
-    # EXCLUDE
-    #
+custom:
 
-    - '!src/**'
+  esbuild:
 
-    - '!tests/**'
+    bundle: true
 
-    - '!coverage/**'
+    minify: false
 
-    - '!prisma/**'
+    sourcemap: true
 
-    - '!README.md'
+    platform: node
 
-    - '!tsconfig.json'
+    target: node20
 
-    - '!jest.config.ts'
+    external:
 
-    - '!node_modules/.prisma/client/libquery_engine-*'
+      - aws-sdk
 
-    - '!node_modules/prisma/**'
-
-    - '!node_modules/@prisma/engines/**'
-
-    - '!node_modules/aws-sdk/**'
+    packager: npm

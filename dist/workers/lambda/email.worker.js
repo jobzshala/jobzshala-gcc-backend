@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.handler = void 0;
 //
 // ========================================
 // EMAIL WORKER
 // ========================================
 //
-const handler = async (event) => {
+export const handler = async (event) => {
     try {
         for (const record of event.Records) {
             await processEmail(record);
@@ -31,7 +28,6 @@ const handler = async (event) => {
         };
     }
 };
-exports.handler = handler;
 //
 // ========================================
 // PROCESS EMAIL

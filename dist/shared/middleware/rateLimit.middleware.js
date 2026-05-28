@@ -1,13 +1,7 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginLimiter = exports.apiLimiter = void 0;
-const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
-const rate_limit_redis_1 = require("rate-limit-redis");
-const redis_1 = __importDefault(require("../../config/redis"));
-exports.apiLimiter = (0, express_rate_limit_1.default)({
+import rateLimit from 'express-rate-limit';
+import { RedisStore } from 'rate-limit-redis';
+import redis from '../../config/redis.js';
+export const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
     standardHeaders: true,
@@ -17,11 +11,11 @@ exports.apiLimiter = (0, express_rate_limit_1.default)({
         status: false,
         message: 'Too many requests. Please try again later.'
     },
-    store: new rate_limit_redis_1.RedisStore({
-        sendCommand: (...args) => redis_1.default.call(...args)
+    store: new RedisStore({
+        sendCommand: (...args) => redis.call(...args)
     })
 });
-exports.loginLimiter = (0, express_rate_limit_1.default)({
+export const loginLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
     max: 5,
     standardHeaders: true,
@@ -30,7 +24,7 @@ exports.loginLimiter = (0, express_rate_limit_1.default)({
         status: false,
         message: 'Too many login attempts. Please try again later.'
     },
-    store: new rate_limit_redis_1.RedisStore({
-        sendCommand: (...args) => redis_1.default.call(...args)
+    store: new RedisStore({
+        sendCommand: (...args) => redis.call(...args)
     })
 });

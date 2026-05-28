@@ -2,6 +2,75 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "The AWS CloudFormation template for this Serverless application",
   "Resources": {
+    "ServerlessDeploymentBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ServerlessDeploymentBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ServerlessDeploymentBucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      }
+                    ]
+                  ]
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": false
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
     "ApiLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
@@ -90,10 +159,12 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "S3Bucket": "serverless-framework-deployments-ap-south-1-6363bc1a-71ef",
-          "S3Key": "serverless/jobzshala-gcc-backend/dev/1779856983395-2026-05-27T04:43:03.395Z/api.zip"
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/jobzshala-gcc-backend/dev/1779894690332-2026-05-27T15:11:30.332Z/jobzshala-gcc-backend.zip"
         },
-        "Handler": "dist/lambda/api.lambda.handler",
+        "Handler": "src/lambda/api.lambda.handler",
         "Runtime": "nodejs20.x",
         "FunctionName": "jobzshala-gcc-backend-dev-api",
         "MemorySize": 512,
@@ -109,14 +180,14 @@
         "ApiLogGroup"
       ]
     },
-    "ApiLambdaVersionYxh4cUkqwN87vVUM3mgZUSpncyHUm5nUzmyAkJI8": {
+    "ApiLambdaVersionSssY0KXPYdSyFEgZjXc6hnWsecx6Me4CVnAP8GyAQ": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ApiLambdaFunction"
         },
-        "CodeSha256": "T8q/4VjJwRQ8pB7lmw+ZQSbbp49RGoJ/jQlh0KZwHTA="
+        "CodeSha256": "/+5DfBcnOcWA3JYBldjyOSldPk2qJ2NWesdu4mywXpA="
       }
     },
     "HttpApi": {
@@ -193,13 +264,34 @@
         "TimeoutInMillis": 30000
       }
     },
-    "HttpApiRouteDefault": {
+    "HttpApiRouteAnyProxyVar": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
           "Ref": "HttpApi"
         },
-        "RouteKey": "$default",
+        "RouteKey": "ANY /{proxy+}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationApi"
+              }
+            ]
+          ]
+        }
+      },
+      "DependsOn": "HttpApiIntegrationApi"
+    },
+    "HttpApiRouteAny": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "ANY /",
         "Target": {
           "Fn::Join": [
             "/",
@@ -217,7 +309,9 @@
   },
   "Outputs": {
     "ServerlessDeploymentBucketName": {
-      "Value": "serverless-framework-deployments-ap-south-1-6363bc1a-71ef",
+      "Value": {
+        "Ref": "ServerlessDeploymentBucket"
+      },
       "Export": {
         "Name": "sls-jobzshala-gcc-backend-dev-ServerlessDeploymentBucketName"
       }
@@ -225,7 +319,7 @@
     "ApiLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ApiLambdaVersionYxh4cUkqwN87vVUM3mgZUSpncyHUm5nUzmyAkJI8"
+        "Ref": "ApiLambdaVersionSssY0KXPYdSyFEgZjXc6hnWsecx6Me4CVnAP8GyAQ"
       },
       "Export": {
         "Name": "sls-jobzshala-gcc-backend-dev-ApiLambdaFunctionQualifiedArn"

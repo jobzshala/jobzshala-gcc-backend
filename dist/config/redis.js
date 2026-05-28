@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const ioredis_1 = require("ioredis");
-const redis = new ioredis_1.Redis({
+import { Redis } from 'ioredis';
+const redis = new Redis({
     host: process.env.REDIS_HOST,
     port: Number(process.env.REDIS_PORT),
     password: process.env.REDIS_PASSWORD || undefined,
@@ -15,4 +13,4 @@ redis.on('error', (err) => {
     console.log('❌ Redis Error');
     console.log(err);
 });
-exports.default = redis;
+export default redis;

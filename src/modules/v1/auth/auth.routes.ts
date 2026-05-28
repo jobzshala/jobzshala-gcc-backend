@@ -1,13 +1,12 @@
 import express from 'express';
 
-import * as controller from './auth.controller';
+import * as controller from './auth.controller.js';
 
-import { validate } from '../../../shared/middleware/validate.middleware';
+import { validate } from '../../../shared/middleware/validate.middleware.js';
 
-import { loginValidation } from './auth.validation';
+import { loginValidation } from './auth.validation.js';
 
 const router = express.Router();
-
 
 /**
  * @swagger
@@ -35,8 +34,6 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: Login successful
- *       400:
- *         description: Validation error
  */
 
 router.post(
@@ -45,4 +42,10 @@ router.post(
     controller.login
 );
 
-export default router;
+export default {
+
+    path: '/auth',
+
+    router
+
+};
